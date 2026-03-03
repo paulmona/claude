@@ -11,8 +11,8 @@
 ### 1. Create the Demo Repo
 
 ```bash
-cd /path/to/claude/demo
-./setup-demo-repo.sh
+# From the workflow-demo repo root:
+./demo/setup-demo-repo.sh
 ```
 
 This creates an empty GitHub repo for the bootstrap to populate.
@@ -260,8 +260,8 @@ Draw or show this flow:
 To reset the demo repo for next time:
 
 ```bash
-cd /path/to/claude/demo
-./reset-demo.sh [your-org]/mcp-api-wrapper-demo
+# From the workflow-demo repo root:
+./demo/reset-demo.sh [your-org]/mcp-api-wrapper-demo
 ```
 
 Also reset the Notion PRD:
