@@ -124,17 +124,24 @@ Bootstrap progress saved for [Project Name]
 
 ## Pre-flight Check
 
-1. Fetch the PRD from Notion using notion-fetch.
+1. **Resolve the Notion PRD Database ID.**
+   Check the project's `CLAUDE.md` for a `## Notion` section containing `PRD Database ID`.
+   - If found, use it.
+   - If CLAUDE.md doesn't exist yet or has no Notion section, ask the user:
+     "What is your Notion PRD database ID? (You can find this in the database URL after notion.so/)"
+   - Store the ID for use throughout bootstrap. It will be written into the generated CLAUDE.md in Step 4.
+
+2. Fetch the PRD from Notion using notion-search against the database ID, then notion-fetch to get full content.
    Confirm Status = Approved and GitHub Ready = true before proceeding.
    If not approved, stop and tell the user to run /pm-prd-ready first.
 
-2. Fetch the TRD from Notion. The TRD is a child page of the PRD.
+3. Fetch the TRD from Notion. The TRD is a child page of the PRD.
    Use notion-search or navigate the PRD's child pages to find the TRD.
    If no TRD is found, warn the user: "No TRD found as a child page of this PRD.
    Technical details in issues and CLAUDE.md will be inferred from the PRD only.
    Continue anyway?" If user declines, stop.
 
-3. **Frontend & UI Requirements Interview** — Before decomposing into milestones, determine
+4. **Frontend & UI Requirements Interview** — Before decomposing into milestones, determine
    whether this project has a user-facing frontend. Ask the user these questions (skip any
    that are already answered in the PRD or TRD):
 
@@ -168,7 +175,7 @@ Bootstrap progress saved for [Project Name]
    - CLAUDE.md generation (frontend section with framework, build commands, component patterns)
    - Dependency map (frontend integration issues depend on their backend modules)
 
-4. Confirm with user:
+5. Confirm with user:
    "Ready to bootstrap [Project Name] into [repo] using PRD + TRD. This will create
    Milestones, Issues, a Dependency Map, and CLAUDE.md. Confirm?"
 
@@ -498,6 +505,16 @@ This file provides guidance to Claude Code when working with code in this reposi
 ### Frontend-Backend Integration
 [How the frontend communicates with backend — REST endpoints, direct module imports,
 client-side API calls, etc. Specify any proxy/middleware setup needed.]
+
+## Notion
+
+These IDs are used by pm-* skills to read and write PRDs and TRDs.
+
+| Key | Value |
+| --- | --- |
+| PRD Database ID | [Notion database ID for the PRDs database] |
+| PRD Page ID | [Notion page ID for this project's PRD] |
+| TRD Page ID | [Notion page ID for this project's TRD, if applicable] |
 
 ## Parallel Development — File Conflict Prevention
 

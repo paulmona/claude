@@ -1,6 +1,6 @@
 # pm-prd-ready
 
-Mark a Viewbridge Notion PRD as GitHub Ready.
+Mark a Notion PRD as GitHub Ready.
 
 ## Usage
 /pm-prd-ready $ARGUMENTS
@@ -10,8 +10,8 @@ If no argument provided, search Notion for Approved PRDs not yet marked GitHub R
 
 ## Steps
 
-1. If $ARGUMENTS provided, use notion-search to find the matching PRD in the Viewbridge PRDs database:
-   https://www.notion.so/2aaef788dde1436ab285c62124211c4f
+1. If $ARGUMENTS provided, use notion-search to find the matching PRD in the PRDs database.
+   The database ID is in the project's `CLAUDE.md` under the `## Notion` section (key: `PRD Database ID`). If not found, ask the user for it.
 
 2. If no argument, search for PRDs where Status = Approved and GitHub Ready = false.
    Present the list and ask the user which one to mark ready.
