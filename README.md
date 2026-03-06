@@ -1,7 +1,6 @@
 # claude-skills
 
-Custom Claude Code slash commands for Viewbridge AI development workflows.
-All commands are prefixed with `vbi-` to identify them as Viewbridge commands.
+Custom Claude Code slash commands for project management workflows.
 
 ## Installation
 
@@ -13,34 +12,35 @@ Inside any Claude Code session:
 
 ### Manual Install
 ```bash
-cp commands/* ~/.claude/commands/
+cp skills/* ~/.claude/commands/
 ```
 
 ---
 
-## Commands
+## Skills
 
 ### Project Setup
 
-| Command | Usage | What it does |
+| Skill | Usage | What it does |
 |---|---|---|
-| `/vbi-prd-ready` | `/vbi-prd-ready PRD-002` | Marks a Notion PRD as GitHub Ready |
-| `/vbi-bootstrap` | `/vbi-bootstrap PRD-002 paulmona/my-repo` | Full project bootstrap: PRD → Milestones → Issues → Dependency Map → CLAUDE.md |
+| `/pm-prd-ready` | `/pm-prd-ready PRD-002` | Marks a Notion PRD as GitHub Ready |
+| `/pm-bootstrap` | `/pm-bootstrap PRD-002 paulmona/my-repo` | Full project bootstrap: PRD + TRD → Milestones → Issues → Dependency Map → CLAUDE.md |
 
 ### Daily Development
 
-| Command | Usage | What it does |
+| Skill | Usage | What it does |
 |---|---|---|
-| `/vbi-bug` | `/vbi-bug "description"` | Creates a labeled bug issue in GitHub with DoD checklist |
-| `/vbi-enhancement` | `/vbi-enhancement "description"` | Creates a labeled enhancement issue in GitHub with DoD checklist |
-| `/vbi-next` | `/vbi-next paulmona/my-repo` | Reads GitHub state, recommends highest-priority unblocked work |
-| `/vbi-status` | `/vbi-status paulmona/my-repo` | Milestone progress, open bugs, blocked issues, health summary |
+| `/pm-bug` | `/pm-bug "description"` | Creates a labeled bug issue in GitHub with DoD checklist |
+| `/pm-bughunt` | `/pm-bughunt #55` | Troubleshoot and root-cause a bug with structured investigation |
+| `/pm-enhancement` | `/pm-enhancement "description"` | Creates a labeled enhancement issue in GitHub with DoD checklist |
+| `/pm-next` | `/pm-next paulmona/my-repo` | Reads GitHub state, recommends highest-priority unblocked work |
+| `/pm-status` | `/pm-status paulmona/my-repo` | Milestone progress, open bugs, blocked issues, health summary |
 
 ---
 
 ## Standards
 
-All commands embed the Viewbridge Definition of Done:
+All skills embed a Definition of Done:
 
 - Failing test written first and committed before any implementation (TDD Red)
 - Implementation written to make test pass (Green)
