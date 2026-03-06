@@ -1,7 +1,7 @@
 # vbi-bootstrap
 
-Bootstrap a new project from an approved Notion PRD into a fully structured GitHub project.
-One atomic operation: PRD → Milestones → Issues → Dependency Map → CLAUDE.md
+Bootstrap a new project from an approved Notion PRD and its TRD into a fully structured GitHub project.
+One atomic operation: PRD + TRD → Milestones → Issues → Dependency Map → CLAUDE.md
 
 ## Usage
 /vbi-bootstrap $ARGUMENTS
@@ -15,9 +15,15 @@ If no arguments provided, ask for PRD first, then GitHub repo name.
    Confirm Status = Approved and GitHub Ready = true before proceeding.
    If not approved, stop and tell the user to run /vbi-prd-ready first.
 
-2. Confirm with user:
-   "Ready to bootstrap [Project Name] into [repo]. This will create Milestones, Issues, a
-   Dependency Map, and CLAUDE.md. Confirm?"
+2. Fetch the TRD from Notion. The TRD is a child page of the PRD.
+   Use notion-search or navigate the PRD's child pages to find the TRD.
+   If no TRD is found, warn the user: "No TRD found as a child page of this PRD.
+   Technical details in issues and CLAUDE.md will be inferred from the PRD only.
+   Continue anyway?" If user declines, stop.
+
+3. Confirm with user:
+   "Ready to bootstrap [Project Name] into [repo] using PRD + TRD. This will create
+   Milestones, Issues, a Dependency Map, and CLAUDE.md. Confirm?"
 
 ---
 
@@ -33,10 +39,12 @@ Due date:    Set if timeline specified in PRD, otherwise leave blank
 
 ## Step 2: Create GitHub Issues
 
-For each milestone, decompose into discrete issues. Each issue must be:
+For each milestone, decompose into discrete issues using both the PRD (what to build)
+and the TRD (how to build it). Each issue must be:
 - A single testable unit of work
 - Completable in 1-4 hours of focused work
 - Clear pass/fail outcome
+- Informed by TRD technical constraints (data models, API contracts, infrastructure requirements)
 
 Issue title format: [Imperative verb] [specific noun]
 Good: "Write failing tests for lead scoring algorithm"
@@ -46,6 +54,30 @@ Bad:  "Various setup tasks" (too broad)
 
 Note: For every build issue, create a paired test issue that is written FIRST.
 The test issue must be the first commit on the branch — failing test before implementation.
+
+### Issue Review Gate
+
+Before creating issues in GitHub, present them to the user for review ONE MILESTONE AT A TIME.
+For each milestone, display a summary table of the planned issues:
+
+```
+### M[N]: [Milestone Name] — [X] issues planned
+
+| #  | Title                                      | Type  | Labels    |
+|----|--------------------------------------------|-------|-----------|
+| 1  | [Issue title]                              | test  | test, F1  |
+| 2  | [Issue title]                              | build | build, F1 |
+| ...| ...                                        | ...   | ...       |
+```
+
+Then ask the user to review with three options:
+- **Approve** — Create all issues for this milestone as shown
+- **Suggest changes** — User provides feedback; revise the issue list and re-present
+- **Skip milestone** — Do not create issues for this milestone
+
+If the user suggests changes, apply the feedback, re-present the updated table, and ask again.
+Only create issues in GitHub after the user approves each milestone.
+This ensures the user has full control over issue scope and content before anything is created.
 
 ### Issue Body Template
 
@@ -80,6 +112,10 @@ As a [role], I want [action] so that [outcome].
 - Blocked by: #[issue number] — [reason] (or "None")
 - Blocks: #[issue number] — [reason] (or "None")
 
+## Technical Details (from TRD)
+[Relevant data models, API contracts, infrastructure requirements, or technical
+constraints from the TRD that apply to this issue. Omit if TRD not available.]
+
 ## Notes
 [Tool references, links to PRD section, implementation hints]
 ```
@@ -108,8 +144,9 @@ Create a pinned GitHub Issue titled "📋 Dependency Map — [Project Name]" wit
 
 ```
 ## Dependency Map — [Project Name]
-Generated from [PRD name] on [date].
+Generated from [PRD name] + [TRD name] on [date].
 Issues in the same phase can run concurrently.
+Technical dependencies sourced from TRD.
 
 ### Phase 1 — Foundation (no dependencies, fully parallelizable)
 - #[N] [title]
@@ -133,7 +170,8 @@ Pin this issue in the GitHub repo.
 ## Step 4: Scaffold CLAUDE.md
 
 Check if a CLAUDE.md exists at the repo root. If not, generate one using this template,
-populated with project-specific content inferred from the PRD tool decisions and tech stack:
+populated with project-specific content from the TRD (primary source for architecture,
+tech stack, data models, and patterns) and the PRD (for milestones and feature context):
 
 ```markdown
 # CLAUDE.md
@@ -153,26 +191,32 @@ This file provides guidance to Claude Code when working with code in this reposi
 ## Local Development Environment
 
 ### Prerequisites
-[Tools, versions, install instructions — inferred from PRD tool decisions]
+[Tools, versions, install instructions — from TRD tech stack, fallback to PRD tool decisions]
 
 ### Setup
-[Step-by-step first-time setup]
+[Step-by-step first-time setup — from TRD environment requirements]
 
 ### Troubleshooting
 [Common errors and fixes]
 
 ## Architecture
 
-[Component hierarchy or description — inferred from PRD]
+[Component hierarchy or description — from TRD system architecture section]
 
 ### Key Directories
-[Map of directories and what lives in each]
+[Map of directories and what lives in each — from TRD project structure]
+
+### Data Models
+[Core data models and schemas — from TRD data model section]
 
 ### Patterns
-[Design patterns used in this project]
+[Design patterns used in this project — from TRD technical decisions]
 
 ### Data Flow
-[How data moves through the system]
+[How data moves through the system — from TRD data flow / integration architecture]
+
+### API Contracts
+[Key API endpoints and contracts — from TRD API design section, if applicable]
 
 ## GitHub Workflow
 
