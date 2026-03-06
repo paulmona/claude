@@ -7,7 +7,7 @@ Custom Claude Code slash commands for project management workflows.
 ### As a Claude Code Plugin (recommended)
 Inside any Claude Code session:
 ```
-/plugin marketplace add https://github.com/paulmona/claude-skills
+/plugin marketplace add https://github.com/paulmona/claude
 ```
 
 ### Manual Install
