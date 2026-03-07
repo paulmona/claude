@@ -12,7 +12,7 @@ If no argument provided, the interview will start from scratch.
 
 ## Notion Target
 
-- **PRDs database ID**: Read from the project's `CLAUDE.md` under the `## Notion` section (key: `PRD Database ID`). If not found, ask the user for it.
+- **PRDs database ID**: Read from `~/.claude/notion-config.json` (key: `prd_database_id`). If the file doesn't exist or the key is missing, ask the user for their Notion PRD database ID and create/update the file.
 - **PRD page title format**: `PRD-{NNN}: {Feature Name}`
 - **PRD numbering**: Determined by querying existing pages in the database; increment the highest found number by 1.
 
@@ -123,10 +123,10 @@ Present the draft clearly. Wait for approval or edits. Apply any requested chang
 After the user confirms:
 
 **Step 1 — Determine the next PRD number.**
-Use notion-search to query the PRDs database (ID from CLAUDE.md). Parse all page titles for the pattern `PRD-NNN`. Find the highest number and increment by 1. If no PRDs exist yet, start at `PRD-001`.
+Use notion-search to query the PRDs database (ID from `~/.claude/notion-config.json`). Parse all page titles for the pattern `PRD-NNN`. Find the highest number and increment by 1. If no PRDs exist yet, start at `PRD-001`.
 
 **Step 2 — Create the PRD page** using notion-create-pages:
-- **Parent database ID**: (from CLAUDE.md)
+- **Parent database ID**: (from `~/.claude/notion-config.json`)
 - **Title**: `PRD-{NNN}: {Feature Name}`
 - **Properties** (set as Notion page properties where supported):
   - Status: Draft

@@ -12,7 +12,7 @@ If no argument provided, ask which PRD to create the TRD for.
 
 ## Notion Target
 
-- **PRDs database ID**: Read from the project's `CLAUDE.md` under the `## Notion` section (key: `PRD Database ID`). If not found, ask the user for it.
+- **PRDs database ID**: Read from `~/.claude/notion-config.json` (key: `prd_database_id`). If the file doesn't exist or the key is missing, ask the user for their Notion PRD database ID and create/update the file.
 - **TRD page title format**: `TRD: {Feature Name}`
 - **TRD page parent**: The PRD page that this TRD belongs to (child page in Notion)
 
@@ -39,7 +39,7 @@ Every TRD must contain these sections in order:
 Before starting the interview, identify which PRD this TRD is for.
 
 **If the user specifies a PRD** (by name, number, or link):
-- Use notion-search to find the PRD in the database (ID from CLAUDE.md).
+- Use notion-search to find the PRD in the database (ID from `~/.claude/notion-config.json`).
 - If multiple matches, list them and ask which one.
 
 **If the user just came from pm-create-prd** (same conversation):

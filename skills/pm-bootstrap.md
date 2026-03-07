@@ -125,11 +125,11 @@ Bootstrap progress saved for [Project Name]
 ## Pre-flight Check
 
 1. **Resolve the Notion PRD Database ID.**
-   Check the project's `CLAUDE.md` for a `## Notion` section containing `PRD Database ID`.
+   Read `~/.claude/notion-config.json` and look for the `prd_database_id` key.
    - If found, use it.
-   - If CLAUDE.md doesn't exist yet or has no Notion section, ask the user:
+   - If the file doesn't exist or the key is missing, ask the user:
      "What is your Notion PRD database ID? (You can find this in the database URL after notion.so/)"
-   - Store the ID for use throughout bootstrap. It will be written into the generated CLAUDE.md in Step 4.
+   - Save the ID to `~/.claude/notion-config.json` (create the file if it doesn't exist).
 
 2. Fetch the PRD from Notion using notion-search against the database ID, then notion-fetch to get full content.
    Confirm Status = Approved and GitHub Ready = true before proceeding.
@@ -505,16 +505,6 @@ This file provides guidance to Claude Code when working with code in this reposi
 ### Frontend-Backend Integration
 [How the frontend communicates with backend — REST endpoints, direct module imports,
 client-side API calls, etc. Specify any proxy/middleware setup needed.]
-
-## Notion
-
-These IDs are used by pm-* skills to read and write PRDs and TRDs.
-
-| Key | Value |
-| --- | --- |
-| PRD Database ID | [Notion database ID for the PRDs database] |
-| PRD Page ID | [Notion page ID for this project's PRD] |
-| TRD Page ID | [Notion page ID for this project's TRD, if applicable] |
 
 ## Parallel Development — File Conflict Prevention
 
