@@ -18,7 +18,7 @@ Every project follows the same flow:
 
 4. **Bootstrap the Project** (`/pm-bootstrap`) — Reads the PRD + TRD from Notion and generates the full GitHub project structure: milestones, issues with TDD checklists, a dependency map, and a CLAUDE.md file. One atomic operation.
 
-5. **Build** — Use `/pm-next` to find what to work on (and optionally hand off to agent teams via `/pm-team`), `/pm-bug` and `/pm-enhancement` to track issues as they arise, `/pm-bughunt` to investigate problems, and `/pm-status` for project health checks. Reference process rules anytime with `/pm-dod`, `/pm-git-workflow`, and `/pm-parallel`.
+5. **Build** — Use `/pm-next` to find what to work on (and optionally hand off to agent teams via `/pm-team`), `/pm-bug` and `/pm-enhancement` to track issues as they arise, `/pm-bughunt` to investigate problems, and `/pm-status` for project health checks. Reference process rules anytime with `/pm-dod`, `/pm-git-workflow`, and `/pm-parallel`. Run `/pm-help` anytime to see which skill matches what you're about to do.
 
 ### Configuration
 
@@ -42,6 +42,19 @@ cp skills/* ~/.claude/commands/
 ---
 
 ## Skills Reference
+
+### /pm-help
+
+Quick reference of all PM skills. Run this when you're about to do something and want to check if there's a skill for it.
+
+**Usage:** `/pm-help`
+
+**What it does:**
+- Shows a "What are you trying to do?" table mapping intentions to skills
+- Shows the typical workflow order from PRD to build
+- Lists which skills are also preloaded into agents
+
+---
 
 ### /pm-create-prd
 
