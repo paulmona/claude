@@ -282,3 +282,147 @@ CLAUDE.md (fat)                     CLAUDE.md (slim, project-only)
 6. **Existing projects** — Run a one-time migration to slim existing CLAUDE.md files and generate config files. Could be a `/pm-migrate` skill or manual.
 
 No existing workflow breaks. The same commands work the same way — they just pull process rules from skills instead of CLAUDE.md. The user experience is identical; the token budget is better.
+
+---
+
+## CRITICAL: Why This Is Even More Important Than Token Savings
+
+### Discovery: Worktree Agents Don't Read CLAUDE.md
+
+Subagents spawned via the Agent tool (including worktree agents) **do NOT automatically load CLAUDE.md**. They receive only:
+
+1. Their custom system prompt (from the agent definition markdown body)
+2. Explicitly preloaded skills (via `skills:` in frontmatter)
+3. Basic environment details (working directory)
+
+**They do NOT inherit:**
+- CLAUDE.md from the repo root
+- Project-level `.claude/CLAUDE.md`
+- Any context from the parent conversation
+
+### What This Means
+
+When you spawn a team of agents today and tell them to work on issues, they **already don't have** your DoD, git workflow rules, or parallel dev rules — even though those rules are sitting in CLAUDE.md. The CLAUDE.md rules only govern the main conversation.
+
+Your agents have been working without process guardrails this whole time. The fat CLAUDE.md gives you a false sense of safety — it protects the orchestrator session but not the workers.
+
+### The Fix: Agent Definition + Preloaded Skills
+
+Moving process rules into skills doesn't just save tokens — it makes them **actually available to agents for the first time**. Here's how:
+
+#### New Agent Definition: `pm-issue-worker`
+
+```yaml
+---
+name: pm-issue-worker
+description: Work on a GitHub issue following team standards
+isolation: worktree
+skills:
+  - pm-dod
+  - pm-git-workflow
+  - pm-parallel
+---
+
+You are working on a GitHub issue in an isolated worktree.
+
+## Your Issue
+$ARGUMENTS
+
+## Rules
+- Follow the Definition of Done from the preloaded pm-dod skill
+- Follow git conventions from the preloaded pm-git-workflow skill
+- Follow file ownership rules from the preloaded pm-parallel skill
+- Read CLAUDE.md in the repo root for project-specific context
+  (architecture, build commands, data models)
+- Push your branch and create a PR when done — never merge
+
+## Workflow
+1. Read CLAUDE.md for project context
+2. Read the issue description for requirements and file boundaries
+3. Create branch: feature/<issue-number>-<short-description>
+4. Write failing test first (Red)
+5. Implement to pass test (Green)
+6. Refactor while green
+7. Run full test suite
+8. Push branch, create PR via `gh pr create`
+```
+
+#### New Skill: `/pm-team` (Team Launcher)
+
+A skill that spawns a team of `pm-issue-worker` agents, one per issue:
+
+```
+/pm-team #14 #15 #16
+```
+
+This would:
+1. Verify all issues are unblocked (check dependency map)
+2. Verify no file ownership conflicts between them
+3. Spawn one `pm-issue-worker` per issue, each in its own worktree
+4. Each worker gets DoD + git rules + parallel rules preloaded as skills
+5. Report status as workers complete
+
+Without the skill extraction, this workflow is impossible — you can't preload
+CLAUDE.md sections into agents, only skills.
+
+---
+
+## Revised Workflow: Team Development
+
+```
+Current Team Workflow (broken)
+──────────────────────────────
+  User: "Work on #14, #15, #16 in parallel"
+       │
+       ├─ Spawn Agent (worktree) for #14
+       │    ❌ No CLAUDE.md loaded
+       │    ❌ No DoD rules
+       │    ❌ No git workflow rules
+       │    ❌ No file ownership rules
+       │    Agent wings it — inconsistent results
+       │
+       ├─ Spawn Agent (worktree) for #15
+       │    ❌ Same problems
+       │
+       └─ Spawn Agent (worktree) for #16
+            ❌ Same problems
+            ⚠️  Might modify files owned by #14 → merge conflict
+
+
+Proposed Team Workflow (fixed)
+──────────────────────────────
+  User: /pm-team #14 #15 #16
+       │
+       ├─ Skill checks dependency map → all unblocked ✅
+       ├─ Skill checks file-owners.json → no conflicts ✅
+       │
+       ├─ Spawn pm-issue-worker (worktree) for #14
+       │    ✅ pm-dod preloaded → knows TDD workflow
+       │    ✅ pm-git-workflow preloaded → correct branch/commit format
+       │    ✅ pm-parallel preloaded → respects file boundaries
+       │    ✅ Reads CLAUDE.md → project context (slim, fast)
+       │
+       ├─ Spawn pm-issue-worker (worktree) for #15
+       │    ✅ Same guarantees
+       │
+       └─ Spawn pm-issue-worker (worktree) for #16
+            ✅ Same guarantees
+            ✅ File ownership enforced → no conflicts
+```
+
+---
+
+## Updated Migration Path
+
+1. **Create 3 process skills** — `/pm-dod`, `/pm-git-workflow`, `/pm-parallel`
+2. **Create agent definition** — `pm-issue-worker` with skills preloaded
+3. **Create `/pm-team` skill** — Team launcher that validates and spawns workers
+4. **Update `/pm-bootstrap`** — Slim CLAUDE.md, generate `.claude/notion-config.json` and `.claude/file-owners.json`
+5. **Update Notion-reading skills** — Read from config file instead of CLAUDE.md
+6. **Update `/pm-bug` and `/pm-enhancement`** — Reference `/pm-dod` instead of inlining
+7. **Update `/pm-next`** — Add git sync, branch creation, DoD reference
+8. **Existing projects** — `/pm-migrate` to slim CLAUDE.md and generate config files
+
+### Priority Order
+
+The agent definition + `/pm-team` skill should be built **first** — this is the biggest workflow improvement. The CLAUDE.md slimming is secondary (nice token savings but doesn't unlock new capability).
