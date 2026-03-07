@@ -18,7 +18,7 @@ Every project follows the same flow:
 
 4. **Bootstrap the Project** (`/pm-bootstrap`) — Reads the PRD + TRD from Notion and generates the full GitHub project structure: milestones, issues with TDD checklists, a dependency map, and a CLAUDE.md file. One atomic operation.
 
-5. **Build** — Use `/pm-next` to find what to work on, `/pm-bug` and `/pm-enhancement` to track issues as they arise, `/pm-bughunt` to investigate problems, and `/pm-status` for project health checks.
+5. **Build** — Use `/pm-next` to find what to work on (and optionally hand off to agent teams via `/pm-team`), `/pm-bug` and `/pm-enhancement` to track issues as they arise, `/pm-bughunt` to investigate problems, and `/pm-status` for project health checks. Reference process rules anytime with `/pm-dod`, `/pm-git-workflow`, and `/pm-parallel`.
 
 ### Configuration
 
@@ -137,11 +137,13 @@ Analyzes GitHub project state and recommends the highest-priority unblocked work
 **Usage:** `/pm-next paulmona/my-repo`
 
 **What it does:**
+- Syncs local repo first (`git fetch origin && git pull origin main`)
 - Fetches all open milestones, issues, labels, and the pinned dependency map
 - Identifies the active milestone (earliest incomplete)
 - Classifies issues as UNBLOCKED, BLOCKED, or IN PROGRESS
 - Applies priority ordering: test before build (TDD), setup before features, bugs before enhancements
 - Flags issues with missing milestones, labels, or DoD checklists
+- Offers a work mode choice: work on the issue directly, or batch unblocked issues for agent teams via `/pm-team`
 
 **Output:**
 ```
@@ -161,7 +163,90 @@ Analyzes GitHub project state and recommends the highest-priority unblocked work
 
 ### Flags
 2 issues have no type label
+
+How would you like to proceed?
+- Work on #14 now (start in this session)
+- Batch unblocked issues for agent team (hand off to /pm-team)
 ```
+
+---
+
+### /pm-team
+
+Orchestrates parallel agent work on multiple GitHub issues. Validates issues, checks for file conflicts, and spawns `pm-issue-worker` agents in isolated worktrees.
+
+**Usage:** `/pm-team paulmona/my-repo #12 #13 #14` or `/pm-team` (interactive — fetches unblocked issues and lets you pick)
+
+**What it does:**
+- Syncs local repo and fetches all specified issues
+- Validates each issue is unblocked (checks dependency map)
+- Checks for file ownership conflicts — two issues modifying the same file cannot run in parallel
+- Presents the validated batch for confirmation
+- Spawns a `pm-issue-worker` agent per issue, each in an isolated worktree
+- Reports results as agents complete (PRs created, blockers hit)
+
+**Output:**
+```
+## Agent Team — paulmona/my-repo
+
+Ready to spawn 3 agents in parallel:
+
+| Agent | Issue | Title                        | Files Created            |
+|-------|-------|------------------------------|--------------------------|
+| 1     | #12   | Write failing tests for...   | test/scoring.test.js     |
+| 2     | #13   | Implement scoring...         | src/scoring.js           |
+| 3     | #15   | Wire scoring to frontend     | public/js/scoring.js     |
+
+No file conflicts detected. All issues unblocked.
+
+Launch agents?
+```
+
+---
+
+### /pm-dod
+
+Quick reference for the TDD workflow and 13-item Definition of Done checklist. Also preloadable into agent definitions via `skills:` frontmatter.
+
+**Usage:** `/pm-dod`
+
+**What it does:**
+- Outputs the full Red-Green-Refactor TDD workflow
+- Outputs the complete DoD checklist (same content that's in CLAUDE.md and issue bodies)
+- Lists common failures to watch for
+
+**Use cases:**
+- Human: quick reference before opening a PR or during code review
+- Agent teams: preloaded into `pm-issue-worker` so agents always have the DoD available
+
+---
+
+### /pm-git-workflow
+
+Quick reference for git and GitHub workflow conventions. Also preloadable into agent definitions.
+
+**Usage:** `/pm-git-workflow`
+
+**What it does:**
+- Outputs branch naming rules (`feature/<issue-number>-short-description`)
+- Outputs commit message format (`Verb noun (#issue-number)`)
+- Outputs PR rules (never merge to main, never run `gh pr merge`)
+- Outputs sync rules (always fetch/pull before starting work)
+- Outputs the full label system (type, feature, severity, priority)
+
+---
+
+### /pm-parallel
+
+Quick reference for parallel development rules and file ownership conventions. Also preloadable into agent definitions.
+
+**Usage:** `/pm-parallel`
+
+**What it does:**
+- Outputs file ownership rules (check issue boundaries before modifying files)
+- Outputs modular architecture patterns (route loaders, barrel files, auto-discovery)
+- Outputs phase rules (scaffolding runs alone in Phase 1, same-phase issues must not touch same files)
+- Explains Option A (modular, preferred) vs Option B (sequential, fallback) architecture
 
 ---
 
@@ -253,6 +338,44 @@ A structured investigation workflow for troubleshooting and root-causing bugs.
 **Supports resuming** — State saved to `.claude/bughunt-state.json` with full hypothesis history. Offers save & exit at every natural breakpoint.
 
 **Output:** Root cause analysis, optionally a fix via PR, GitHub issue updated with findings.
+
+---
+
+## Agent Definitions
+
+### pm-issue-worker
+
+A worktree-isolated agent that works on a single GitHub issue following full TDD discipline. Used by `/pm-team` to run multiple issues in parallel.
+
+**Location:** `agents/pm-issue-worker.md`
+
+**Preloaded skills:** `pm-dod`, `pm-git-workflow`, `pm-parallel`
+
+**What it does:**
+1. Reads `CLAUDE.md` for project-specific context
+2. Fetches the issue from GitHub for requirements and file boundaries
+3. Creates a feature branch
+4. Writes a failing test first (Red) and commits it
+5. Implements to pass the test (Green) and commits
+6. Refactors while green and commits
+7. Runs the full test suite
+8. Self-checks against the Definition of Done
+9. Pushes and creates a PR via `gh pr create`
+
+**Rules:**
+- Never merges to main or merges PRs — leaves both for human review
+- Stops and reports if it discovers a file ownership conflict
+- Stops and reports if the issue is unclear or missing acceptance criteria
+
+**How it's used:** You don't invoke this directly. `/pm-team` spawns these agents, one per issue, each in its own worktree.
+
+### Dual-Mode Design
+
+The process skills (`pm-dod`, `pm-git-workflow`, `pm-parallel`) exist as **copies** of content that's also in the generated CLAUDE.md. This is intentional:
+
+- **Human mode:** You invoke `/pm-dod` etc. as quick references. CLAUDE.md has the rules inline. No agent definitions involved.
+- **Agent teams mode:** `/pm-team` spawns `pm-issue-worker` agents. Each agent reads CLAUDE.md (rules) AND gets the skills preloaded (structured workflow). The duplication is reinforcement.
+- **No mode selection at bootstrap time.** Both paths are always available. CLAUDE.md is never slimmed down.
 
 ---
 
