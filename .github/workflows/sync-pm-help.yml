@@ -1,0 +1,60 @@
+name: Sync pm-help skill
+
+# Triggers when pm-* skill files change on any branch push
+on:
+  push:
+    paths:
+      - 'skills/pm-*.md'
+      - '!skills/pm-help.md'  # Don't trigger on pm-help itself (avoid loops)
+
+jobs:
+  sync-pm-help:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check if pm-help is already up to date
+        id: check
+        run: |
+          # List all pm-* skills except pm-help
+          skills=$(ls skills/pm-*.md 2>/dev/null | grep -v pm-help.md | sed 's|skills/||;s|\.md$||;s|^|/|')
+
+          # Check which skills are missing from pm-help.md
+          missing=""
+          for skill in $skills; do
+            if ! grep -q "$skill" skills/pm-help.md 2>/dev/null; then
+              missing="$missing $skill"
+            fi
+          done
+
+          if [ -z "$missing" ]; then
+            echo "All skills are listed in pm-help.md"
+            echo "needs_update=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Missing from pm-help.md:$missing"
+            echo "needs_update=true" >> "$GITHUB_OUTPUT"
+            echo "missing=$missing" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update pm-help with Claude
+        if: steps.check.outputs.needs_update == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            The following pm-* skills are missing from skills/pm-help.md:
+            ${{ steps.check.outputs.missing }}
+
+            For each missing skill:
+            1. Read the skill file from skills/
+            2. Add a row to the "What are you trying to do?" table in skills/pm-help.md
+            3. Update the "Typical Workflow" section if the new skill fits into the flow
+
+            Match the existing table format exactly. Keep descriptions to one line.
+            Commit the change with message: "Update pm-help with new skills (auto-sync)"
+          claude_args: "--max-turns 5 --model claude-sonnet-4-6"

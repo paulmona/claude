@@ -546,6 +546,14 @@ When multiple agents work in parallel (worktrees or teams), they MUST NOT modify
 - No issue = no work started, no exceptions
 - Issues closed on merge only — never before
 
+## Skill Maintenance
+
+When creating or modifying any `/pm-*` skill, you MUST update `skills/pm-help.md`:
+- Add new skills to the "What are you trying to do?" table
+- Update descriptions if a skill's purpose changed
+- Update the "Typical Workflow" section if the new skill fits into the flow
+This keeps the help reference accurate so developers can always find the right skill.
+
 ## Definition of Done
 
 All work MUST follow TDD — no exceptions:
@@ -571,6 +579,28 @@ An issue is done when ALL of the following are true:
 ```
 
 Commit the CLAUDE.md to the repo root with message: "Add CLAUDE.md (#[first issue number])"
+
+---
+
+## Step 5: Update /pm-help Skill
+
+After all other steps are complete, check if any new `/pm-*` skills were created or modified
+during this session. If so, update `skills/pm-help.md` to include them:
+
+1. Read `skills/pm-help.md` and its "What are you trying to do?" table
+2. Compare the table entries against all files in `skills/` matching `pm-*.md`
+3. For any skill file NOT listed in the table, add a new row with:
+   - "I want to…" — inferred from the skill's description frontmatter or first heading
+   - "Run this" — the `/pm-*` command name
+   - "What it does" — one-line summary from the skill's description
+4. If any existing table entry's description no longer matches its skill file, update it
+5. If the "Typical Workflow" section needs updating (e.g. new skill fits into the flow), update it
+6. Commit: "Update pm-help with new skills"
+
+This step is also a **standing rule for all skill creation**: any time a `/pm-*` skill is
+created or substantially modified — whether during bootstrap, manual creation, or any other
+session — the author MUST update `skills/pm-help.md` to keep it in sync. This rule should
+be included in every project's CLAUDE.md.
 
 ---
 
