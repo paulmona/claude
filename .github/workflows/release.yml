@@ -1,16 +1,9 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      bump:
-        description: 'Version bump type'
-        required: true
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
@@ -20,37 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get latest tag
-        id: latest
-        run: |
-          tag=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.' | head -1)
-          echo "tag=${tag:-v0.0.0}" >> "$GITHUB_OUTPUT"
-
-      - name: Bump version
-        id: bump
-        run: |
-          version="${{ steps.latest.outputs.tag }}"
-          version="${version#v}"
-          IFS='.' read -r major minor patch <<< "$version"
-          case "${{ inputs.bump }}" in
-            major) major=$((major + 1)); minor=0; patch=0 ;;
-            minor) minor=$((minor + 1)); patch=0 ;;
-            patch) patch=$((patch + 1)) ;;
-          esac
-          echo "version=v${major}.${minor}.${patch}" >> "$GITHUB_OUTPUT"
-
-      - name: Create tag
-        run: |
-          git tag "${{ steps.bump.outputs.version }}"
-          git push origin "${{ steps.bump.outputs.version }}"
 
       - name: Create GitHub Release
         run: |
-          gh release create "${{ steps.bump.outputs.version }}" \
-            --title "${{ steps.bump.outputs.version }}" \
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
             --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

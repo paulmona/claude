@@ -4,8 +4,8 @@
 
 - Semver (MAJOR.MINOR.PATCH) on trunk-based dev
 - All work merges to `main` via PR
-- Releases are tagged via GitHub Actions workflow dispatch (`Actions > Release > Run workflow`)
-- Release notes are auto-generated from PR titles since the last tag
+- Tag a release locally with `git tag v1.2.3 && git push origin v1.2.3`
+- Pushing a `v*` tag triggers GitHub Actions to create a Release with auto-generated notes
 
 ## Structure
 
