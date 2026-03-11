@@ -98,6 +98,8 @@ Create a pinned GitHub issue titled `Dependency Map -- [Project Name]` with phas
 
 ## Step 6: Assign AI-AGENT / HUMAN Labels
 
+Ask the user: "Do you want to classify issues as AI-AGENT vs HUMAN? This helps identify which tasks can be delegated to an AI coding agent." If they decline, skip to Step 7.
+
 Classify every open issue as `AI-AGENT` or `HUMAN` based on the work required.
 
 **AI-AGENT** — tasks an AI coding agent can complete autonomously:
