@@ -96,7 +96,51 @@ Create a pinned GitHub issue titled `Dependency Map -- [Project Name]` with phas
 
 ---
 
-## Step 6: Generate/Update CLAUDE.md
+## Step 6: Assign AI-AGENT / HUMAN Labels
+
+Classify every open issue as `AI-AGENT` or `HUMAN` based on the work required.
+
+**AI-AGENT** — tasks an AI coding agent can complete autonomously:
+- Code implementation (backend, frontend with mocks/designs available)
+- Writing tests
+- API integration and data plumbing
+- Refactoring, migrations, CI/CD config
+- Documentation generated from code
+
+**HUMAN** — tasks requiring human judgment or external access:
+- Design work (graphics, logos, UI mockups, UX flows)
+- Obtaining credentials, API keys, or third-party account setup
+- Stakeholder decisions or sign-offs
+- Content creation (copy, marketing, legal)
+- Manual environment provisioning (DNS, hosting, app store)
+- UX review and usability testing
+
+**Present classification for review:**
+
+```
+### Issue Assignment — AI-AGENT vs HUMAN
+
+| #   | Title                          | Assignee  | Reason                         |
+|-----|--------------------------------|-----------|--------------------------------|
+| #1  | Set up project scaffold        | AI-AGENT  | Code scaffolding               |
+| #2  | Create logo and brand assets   | HUMAN     | Requires design work           |
+| #3  | Implement auth flow            | AI-AGENT  | Backend implementation         |
+| #4  | Get Stripe API keys            | HUMAN     | External credential            |
+| #5  | Build dashboard UI             | AI-AGENT  | Frontend — designs available   |
+```
+
+**Review gate:**
+- **Approve** — apply labels as shown
+- **Override** — user specifies changes, re-present
+- **Skip** — do not apply assignee labels
+
+On approval, create `AI-AGENT` and `HUMAN` labels in GitHub (if they don't exist) and apply to each issue via `gh issue edit`.
+
+**Save state** after labels applied.
+
+---
+
+## Step 7: Generate/Update CLAUDE.md
 
 If no project CLAUDE.md exists, generate one with:
 - Build & run commands (from TRD tech stack)
@@ -121,6 +165,7 @@ Notion Board:  [N] stories populated
 Milestones:    [N] created in GitHub
 Issues:        [N] created in GitHub (cross-linked to Notion)
 Dep Map:       Pinned as issue #[N]
+Assignment:    [N] AI-AGENT / [N] HUMAN
 Dashboard:     Updated with milestone progress
 CLAUDE.md:     [Created / Updated]
 
