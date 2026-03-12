@@ -2,7 +2,9 @@
 
 **Available in:** Full + Light mode
 
-Read `shared.md` for database schemas before starting.
+Read `shared.md` for database schemas and resume state schema before starting.
+
+Check for existing resume state in `.claude/pm-state.json` where `action` is `trd`. If state exists, show a recap of completed topics and their key points, then ask: "Resume from where you left off, or start fresh?" If resuming, skip Phase 0 (PRD reference is in state) and continue from the next unanswered topic. If starting fresh, delete the state file.
 
 ---
 
@@ -20,6 +22,8 @@ Fetch PRD content via `notion-fetch`. Extract: Overview, Goals, Non-Goals, User 
 
 **Opening:**
 > "I've pulled up **[PRD Title]**. Let's build the technical plan. First: **what's the high-level technical approach?**"
+
+Ask one topic at a time. Wait for answers before moving on. **Save state after each completed topic.**
 
 **Interview sequence:**
 
@@ -70,6 +74,6 @@ Draft full TRD in Markdown. Show to user. Wait for approval.
 ## Error Handling
 
 - PRD not found: "Can't find that PRD. Double-check the name or number?"
-- User bails: offer to save partial draft
+- User bails mid-interview: save state to `.claude/pm-state.json` with all completed topics and PRD reference. "Progress saved. Run `/pm trd` to pick up where you left off."
 - Notion fails: show full TRD as Markdown
 - No PRD exists: "Need a PRD first -- want to run `/pm create`?"

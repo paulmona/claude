@@ -136,12 +136,12 @@ As a [role], I want [action] so that [outcome].
 
 ## Resume State Schema
 
-For multi-step operations (bootstrap, bughunt), save to `.claude/pm-state.json` in the project directory:
+For multi-step operations (bootstrap, bughunt, create, trd), save to `.claude/pm-state.json` in the project directory:
 
 ```json
 {
   "version": 1,
-  "action": "bootstrap|bughunt",
+  "action": "bootstrap|bughunt|create|trd",
   "project_name": "...",
   "started_at": "ISO",
   "updated_at": "ISO",
@@ -150,6 +150,22 @@ For multi-step operations (bootstrap, bughunt), save to `.claude/pm-state.json` 
 }
 ```
 
+**For interview actions (create, trd)**, `data` stores completed topics:
+
+```json
+{
+  "data": {
+    "completed_topics": {
+      "name_and_pitch": { "name": "Feature X", "pitch": "..." },
+      "problem": "...",
+      "goals": ["...", "..."]
+    },
+    "current_topic": 4,
+    "prd_ref": "PRD-009"
+  }
+}
+```
+
 If state exists, present summary and ask: "Resume from where you left off, or start fresh?"
-If resume: sync with remote first, then skip completed steps.
+If resume: show a recap of completed topics, then continue from the next unanswered topic.
 If fresh: delete state file and start over.
