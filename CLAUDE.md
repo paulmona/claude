@@ -10,7 +10,7 @@
 ## Structure
 
 ```
-skills/         Skill definitions (*.md)
+commands/       Slash command definitions (*.md)
 .github/        GitHub Actions workflows
 ```
 

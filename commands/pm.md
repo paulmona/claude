@@ -7,7 +7,7 @@ description: Project management hub. Use for ANY project management task: creati
 
 Single entry point for all project management workflows. Detects environment, loads config, and routes to the correct action.
 
-**On invocation:** read `~/.claude/commands/pm-actions/shared.md` for database schemas and templates, then read the action-specific file listed below.
+**On invocation:** read `pm-actions/shared.md` for database schemas and templates, then read the action-specific file listed below.
 
 ---
 
@@ -98,15 +98,15 @@ Light mode: show 1-3, 5, 7-8 only.
 
 | Action | File | Mode |
 |---|---|---|
-| create | `~/.claude/commands/pm-actions/create.md` | Full + Light |
-| trd | `~/.claude/commands/pm-actions/trd.md` | Full + Light |
-| ready | `~/.claude/commands/pm-actions/ready.md` | Full + Light |
-| bootstrap | `~/.claude/commands/pm-actions/bootstrap.md` | Full only |
-| status | `~/.claude/commands/pm-actions/status.md` | Full + Light |
-| next | `~/.claude/commands/pm-actions/next.md` | Full only |
-| bug | `~/.claude/commands/pm-actions/bug.md` | Full + Light |
-| enhancement | `~/.claude/commands/pm-actions/enhancement.md` | Full + Light |
-| bughunt | `~/.claude/commands/pm-actions/bughunt.md` | Full only |
+| create | `pm-actions/create.md` | Full + Light |
+| trd | `pm-actions/trd.md` | Full + Light |
+| ready | `pm-actions/ready.md` | Full + Light |
+| bootstrap | `pm-actions/bootstrap.md` | Full only |
+| status | `pm-actions/status.md` | Full + Light |
+| next | `pm-actions/next.md` | Full only |
+| bug | `pm-actions/bug.md` | Full + Light |
+| enhancement | `pm-actions/enhancement.md` | Full + Light |
+| bughunt | `pm-actions/bughunt.md` | Full only |
 
 **After completing any action**, offer the logical next step:
 - create -> "Want to continue to the TRD?"
