@@ -8,6 +8,18 @@ Check for existing resume state in `.claude/pm-state.json` where `action` is `cr
 
 ---
 
+## Phase 0: Ensure PRD Database Exists
+
+Load PRD Database ID from config (project `CLAUDE.md` -> `~/.claude/CLAUDE.md`).
+
+If no PRD Database ID is found:
+1. Ask the user: "No PRD database configured. I can create one in your Notion workspace, or you can give me an existing database ID. Which do you prefer?"
+2. **If creating:** Ask which Notion page to use as the parent (or create at workspace top level). Create the database via `notion-create-database` with the schema from `shared.md` (Name, Status, Priority, Category, GitHub Ready, Status Dashboard). Save the returned database ID.
+3. **If existing:** Ask for the database ID. Validate it by calling `notion-fetch` on it.
+4. Save the database ID to `~/.claude/CLAUDE.md` under `## Notion` (create the file if it doesn't exist). Confirm: "PRD database configured. You won't need to do this again."
+
+---
+
 ## Phase 1: Interview
 
 **Resume check:** If state exists, show a recap of completed topics and their key points, then ask: "Resume from where you left off, or start fresh?" If resuming, skip to the next unanswered topic. If starting fresh, delete the state file.
