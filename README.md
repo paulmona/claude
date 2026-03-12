@@ -50,8 +50,8 @@ To update after new releases:
 
 ### Manual Install
 ```bash
-cp skills/* ~/.claude/commands/
-cp -r skills/pm-actions ~/.claude/commands/
+cp commands/* ~/.claude/commands/
+cp -r commands/pm-actions ~/.claude/commands/
 ```
 
 ---
