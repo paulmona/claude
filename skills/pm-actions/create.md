@@ -2,13 +2,17 @@
 
 **Available in:** Full + Light mode
 
-Read `shared.md` for database schemas before starting.
+Read `shared.md` for database schemas and resume state schema before starting.
+
+Check for existing resume state in `.claude/pm-state.json` where `action` is `create`.
 
 ---
 
 ## Phase 1: Interview
 
-Start warm. Ask one topic at a time. Wait for answers before moving on.
+**Resume check:** If state exists, show a recap of completed topics and their key points, then ask: "Resume from where you left off, or start fresh?" If resuming, skip to the next unanswered topic. If starting fresh, delete the state file.
+
+Start warm. Ask one topic at a time. Wait for answers before moving on. **Save state after each completed topic.**
 
 **Opening:**
 > "Let's build your PRD. I'll walk you through the product requirements -- what we're building and why. Technical details like architecture and tooling will go into a TRD afterward. First: **what's the one-line pitch for this product or feature?**"
@@ -97,7 +101,7 @@ Wait for approval. Apply edits.
 
 ## Error Handling
 
-- User bails mid-interview: "Want me to save what we have as a Draft so you can finish later?"
+- User bails mid-interview: save state to `.claude/pm-state.json` with all completed topics. "Progress saved. Run `/pm create` to pick up where you left off."
 - Notion save fails: show full PRD as Markdown so nothing is lost
 - Category/Priority unclear: default to Internal Ops / P1 - Next, mention assumption
 - No existing PRDs: start at PRD-001
