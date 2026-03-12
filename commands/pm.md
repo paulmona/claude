@@ -1,5 +1,4 @@
 ---
-name: pm
 description: Project management hub. Use for ANY project management task: creating PRDs/TRDs, project status, filing bugs, bootstrapping projects, or tracking what to work on next. Single entry point for all PM workflows.
 ---
 
